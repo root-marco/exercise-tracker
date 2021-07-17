@@ -15,7 +15,7 @@ export async function postUser(req, res) {
     }).save();
     res.json({
       username: username,
-      _id: newUser._id,
+      _id: newUser._id
     });
   } catch (error) {
     if (error.code == 11000) {
@@ -27,7 +27,10 @@ export async function postUser(req, res) {
 }
 
 export async function postExercise(req, res) {
-  const { id, description, duration, date } = req.body;
+  const id = req.params._id;
+  const description = req.body.description;
+  const duration = req.body.duration;
+  const date = req.body.date;
 
   let formatedDate = new Date(Date.now());
 
@@ -36,13 +39,13 @@ export async function postExercise(req, res) {
       const newDate = new Date(date);
       formatedDate = newDate;
     } catch (error) {
-      formatedDate = error;
+      formatedDate = error
     }
   }
 
   try {
     const findUser = await User.findOne({
-      _id: id,
+      _id: id
     });
     const newExercise = await new Exercise({
       user: findUser._id,
@@ -68,36 +71,36 @@ export async function getExercises(req, res) {
   let fromQuery = req.query.from;
   let toQuery = req.query.to;
   let limit = req.query.limit;
-  let count = 0;
+  let count = 0
 
   try {
     let Query = {
-      user: id,
+      user: id
     }
     if (fromQuery || toQuery) {
-      Query.date = {};
+      Query.date = {}
     }
     if (fromQuery) {
-      Query.date.$gte = new Date(fromQuery).toDateString();
+      Query.date.$gte = new Date(fromQuery).toDateString()
     }
     if (toQuery) {
-      Query.date.$lte = new Date(toQuery).toDateString();
+      Query.date.$lte = new Date(toQuery).toDateString()
     }
 
     const findUser = await User.findOne({
-      _id: id,
+      _id: id
     });
     const singleExercise = await Exercise.find(Query).sort({
-      date: -1,
+      date: -1
     });
     const ExerciseObj = {
       _id: findUser._id,
       username: findUser.username,
       count: count,
-      log: [],
+      log: []
     };
     if (limit > singleExercise.length || !limit) {
-      limit = singleExercise.length;
+      limit = singleExercise.length
     }
     for (let i = 0; i < limit; i++) {
       ExerciseObj.count = i + 1;
